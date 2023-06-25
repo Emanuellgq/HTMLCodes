@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Divisor de Conta de Restaurante</title>
+  <style>
+    input[type="number"] {
+      width: 50px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Divisor de Conta de Restaurante</h1>
+  <div>
+    <label for="clientes">Clientes:</label>
+    <input type="text" id="clientes" placeholder="Insira os nomes separados por vírgula" />
+  </div>
+  <div>
+    <label for="produtos">Produtos:</label>
+    <input type="text" id="produtos" placeholder="Insira os produtos e seus valores separados por vírgula" />
+  </div>
+  <button onclick="calcularDivisao()">Calcular Divisão</button>
+  <div id="consumo"></div>
+  <div id="resultado"></div>
+
+  <script>
+    function calcularDivisao() {
+      var clientesInput = document.getElementById("clientes").value;
+      var produtosInput = document.getElementById("produtos").value;
+
+      var clientes = clientesInput.split(",");
+      var produtos = produtosInput.split(",");
+
+      var totalGasto = {};
+      var totalTaxa = {};
+      var consumo = {};
+
+      for (var i = 0; i < clientes.length; i++) {
+        var cliente = clientes[i].trim();
+        totalGasto[cliente] = 0;
+        totalTaxa[cliente] = 0;
+        consumo[cliente] = {};
+      }
+
+      for (var i = 0; i < produtos.length; i++) {
+        var produto = produtos[i].trim();
+        var preco = parseFloat(produtos[++i].trim());
+
+        var consumidoresInput = prompt("Quem consumiu o produto '" + produto + "'? (insira os nomes separados por vírgula)");
+
+        if (consumidoresInput) {
+          var consumidores = consumidoresInput.split(",");
+          var quantidade = consumidores.length;
+
+          var quantidadeProduto = parseInt(prompt("Quantos " + produto + " foram consumidos?"));
+
+          for (var j = 0; j < consumidores.length; j++) {
+            var consumidor = consumidores[j].trim();
+            if (!consumo[consumidor][produto]) {
+              consumo[consumidor][produto] = quantidadeProduto;
+            } else {
+              consumo[consumidor][produto] += quantidadeProduto;
+            }
+          }
+
+          var precoTotal = quantidadeProduto * preco;
+          var precoPorCliente = precoTotal / quantidade;
+          for (var j = 0; j < consumidores.length; j++) {
+            var consumidor = consumidores[j].trim();
+            totalGasto[consumidor] += precoPorCliente;
+          }
+        }
+      }
+
+      for (var cliente in totalGasto) {
+        totalTaxa[cliente] = totalGasto[cliente] * 0.1;
+      }
+
+      var consumoDiv = document.getElementById("consumo");
+      consumoDiv.innerHTML = "";
+
+      for (var cliente in consumo) {
+        var produtosConsumidos = Object.keys(consumo[cliente]);
+        var mensagem = "";
+        if (produtosConsumidos.length > 0) {
+
+            mensagem = cliente + " consumiu " + produtosConsumidos.join(", ");
+            consumoDiv.innerHTML += mensagem + "<br>";
+        }
+      }
+
+      var resultadoDiv = document.getElementById("resultado");
+      resultadoDiv.innerHTML = "";
+
+      for (var cliente in totalGasto) {
+        var resultado = cliente + ": R$ " + ((totalGasto[cliente] + totalTaxa[cliente])).toFixed(2);
+        resultadoDiv.innerHTML += resultado + "<br>";
+      }
+    }
+  </script>
+</body>
+</html>

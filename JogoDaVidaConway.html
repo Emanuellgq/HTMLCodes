@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jogo da Vida de Conway</title>
+    <style>
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(10, 30px);
+        }
+
+        .cell {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h2>Jogo da Vida de Conway</h2>
+    <div class="grid" id="grid"></div>
+    <button onclick="iniciarJogo()">Iniciar Jogo</button>
+    <button onclick="pararJogo()">Parar Jogo</button>
+
+    <script>
+        var gridElement = document.getElementById("grid");
+        var grid = [];
+        var gridSize = 10;
+        var interval;
+
+        function criarGrade() {
+            var cells = "";
+            for (var i = 0; i < gridSize; i++) {
+                grid[i] = [];
+                for (var j = 0; j < gridSize; j++) {
+                    grid[i][j] = 0;
+                    cells += `<div class="cell" onclick="toggleCell(${i}, ${j})"></div>`;
+                }
+            }
+            gridElement.innerHTML = cells;
+        }
+
+        function toggleCell(row, col) {
+            var cell = gridElement.children[row * gridSize + col];
+            if (grid[row][col] === 0) {
+                grid[row][col] = 1;
+                cell.style.backgroundColor = "black";
+            } else {
+                grid[row][col] = 0;
+                cell.style.backgroundColor = "";
+            }
+        }
+
+        function atualizarGrade() {
+            var newGrid = [];
+            for (var i = 0; i < gridSize; i++) {
+                newGrid[i] = [];
+                for (var j = 0; j < gridSize; j++) {
+                    var neighbors = contarVizinhos(i, j);
+                    if (grid[i][j] === 1) {
+                        if (neighbors < 2 || neighbors > 3) {
+                            newGrid[i][j] = 0; // célula morre
+                        } else {
+                            newGrid[i][j] = 1; // célula sobrevive
+                        }
+                    } else {
+                        if (neighbors === 3) {
+                            newGrid[i][j] = 1; // célula nasce
+                        } else {
+                            newGrid[i][j] = 0; // célula continua vazia
+                        }
+                    }
+                }
+            }
+            grid = newGrid;
+            atualizarGradeDisplay();
+        }
+
+        // Conta o número de vizinhos vivos de uma célula
+        function contarVizinhos(row, col) {
+            var count = 0;
+            for (var i = -1; i <= 1; i++) {
+                for (var j = -1; j <= 1; j++) {
+                    if (i === 0 && j === 0) continue;
+                    var newRow = row + i;
+                    var newCol = col + j;
+                    if (newRow >= 0 && newRow < gridSize && newCol >= 0 && newCol < gridSize) {
+                        if (grid[newRow][newCol] === 1) {
+                            count++;
+                        }
+                    }
+                }
+            }
+            return count;
+        }
+
+        function atualizarGradeDisplay() {
+            for (var i = 0; i < gridSize; i++) {
+                for (var j = 0; j < gridSize; j++) {
+                    var cell = gridElement.children[i * gridSize + j];
+                    if (grid[i][j] === 1) {
+                        cell.style.backgroundColor = "black";
+                    } else {
+                        cell.style.backgroundColor = "";
+                    }
+                }
+            }
+        }
+
+        function iniciarJogo() {
+            clearInterval(interval);
+            interval = setInterval(atualizarGrade, 1000);
+        }
+
+        function pararJogo() {
+            clearInterval(interval);
+        }
+
+        criarGrade();
+    </script>
+</body>
+</html>

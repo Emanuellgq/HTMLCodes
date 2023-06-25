@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Conversor de Números Romanos/Arábicos</title>
+</head>
+<body>
+    <h2>Conversor de Números Romanos</h2>
+    <label for="number">Digite um número romano ou arábico:</label>
+    <input type="text" id="number">
+    <button onclick="convert()">Converter</button>
+    <p id="result"></p>
+
+    <script>
+        function convert() {
+            var input = document.getElementById("number").value;
+            var result = document.getElementById("result");
+
+            if (input === "") {
+                result.innerHTML = "Por favor, digite um número romano ou arábico.";
+                return;
+            }
+
+            if (numRomano(input)) {
+                result.innerHTML = "Número arábico correspondente: " + romanoArabico(input);
+            } else {
+                var number = parseInt(input, 10);
+                if (number < 1 || number > 3999) {
+                    result.innerHTML = "O número deve estar entre 1 e 3999.";
+                } else {
+                    result.innerHTML = "Número romano correspondente: " + arabicoRomano(number);
+                }
+            }
+        }
+
+        function numRomano(input) {
+            var romanRegex = /^(M{0,3})(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/;
+            return romanRegex.test(input);
+        }
+
+        function romanoArabico(roman) {
+            var romanMap = {
+                'I': 1,
+                'V': 5,
+                'X': 10,
+                'L': 50,
+                'C': 100,
+                'D': 500,
+                'M': 1000
+            };
+
+            var arabic = 0;
+            var previousValue = 0;
+
+            for (var i = roman.length - 1; i >= 0; i--) {
+                var currentValue = romanMap[roman[i]];
+                if (currentValue < previousValue) {
+                    arabic -= currentValue;
+                } else {
+                    arabic += currentValue;
+                    previousValue = currentValue;
+                }
+            }
+
+            return arabic;
+        }
+
+        function arabicoRomano(arabic) {
+            var romanMap = {
+                1000: 'M',
+                900: 'CM',
+                500: 'D',
+                400: 'CD',
+                100: 'C',
+                90: 'XC',
+                50: 'L',
+                40: 'XL',
+                10: 'X',
+                9: 'IX',
+                5: 'V',
+                4: 'IV',
+                1: 'I'
+            };
+
+            var roman = "";
+            var values = Object.keys(romanMap).reverse();
+
+            for (var i = 0; i < values.length; i++) {
+                var value = values[i];
+                while (arabic >= value) {
+                    roman += romanMap[value];
+                    arabic -= value;
+                }
+            }
+
+            return roman;
+        }
+    </script>
+</body>
+</html>
